@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<html>
+  <head>
+  </head>
+  <body onload = setupGame() bgcolor = "#333355">
+    <H1> Ikea Game</h1>
+	<canvas id="GCanvas" width="640" height="480">No HTML5 Support</canvas>
+	<script>
+		//Game canvas
+		var canvas = document.getElementById('GCanvas');
+		var GC = canvas.getContext('2d'); //GCC = Game Canvas (what we draw on)
+		
+		//Global Variables
+		var screenWidth = 640;//must match how big the canvas is!
+		var screenHeight = 480;
+		
+		var playerX = 200; 		//Coordinates
+		var playerY = 200;
+		var gameState = 1;		//1=Intro, 2=Main Game, 3=Outro
+		var spriteRow = 10;		//Sprite sheet coordinates
+		var spriteCol = 0;	
+		var spriteDelay = 5;	//Slow animation down	
+		var spriteAction = "walk"; 	//to allow for development of other animation cycles
+		
+		//Keyboard Input Listener
+		var keyState = {};    
+		window.addEventListener('keydown',function(e){keyState[e.keyCode || e.which] = true;},true);    
+		window.addEventListener('keyup',function(e){keyState[e.keyCode || e.which] = false;},true);	
+			
+		
+		//game functions	
+		function setupGame()
+		{	
+			// Onload function
+			timerID = setInterval("gameLoop()", 30); //run the mainGame
+			
+			//Create and load image (png)
+			image1 = new Image();
+			image1.src = "character.png";
+			
+			ikeaLogo = new Image();
+			ikeaLogo.src = "ikealogo.png";
+			
+			blueprint = new Image();
+			blueprint.src = "blueprint-1.jpg";
+		}
+
+		
+		function gameLoop()
+		{
+			switch(gameState)
+			{
+				case 1:intro(); break;
+				case 2:mainGame();break;
+				case 3:outro();break;
+			}
+		}
+		
+		function initGame()
+		{
+			
+		}
+		function intro()
+		{
+			
+			//Get Player input 
+			if(keyState[32]){gameState = 2;}//Space
+				
+			GC.clearRect(0,0,screenWidth,screenHeight);
+			GC.drawImage( ikeaLogo, 0, 0, ikeaLogo.width, ikeaLogo.height, 0, 0, screenWidth, screenHeight ); //Fit images to canvas
+			GC.strokeRect(0,0, screenWidth,screenHeight);
+		
+		}
+		function outro()
+		{
+			
+		}
+		
+		function mainGame()
+		{
+			//Get Player input - select correct sprite row	
+			if(keyState[37]){playerX-=2; spriteDelay--; spriteRow = 9;}//left key
+			if(keyState[39]){playerX+=2; spriteDelay--; spriteRow = 11;}//right key
+			if(keyState[38]){playerY-=2; spriteDelay--; spriteRow = 8;}//left key
+			if(keyState[40]){playerY+=2; spriteDelay--; spriteRow = 10;}//right key
+							
+			//Animate Sprite with delay. 				
+			if(spriteDelay<0)
+			{
+				spriteCol++; 
+				if(spriteCol>=9){spriteCol=0;} //repeat if at end 
+				spriteDelay = 5;
+			}
+			
+			//DRAW ALL GAME STUFF
+			GC.clearRect(0,0,screenWidth,screenHeight);
+			GC.drawImage( blueprint, 0, 0, blueprint.width, blueprint.height, 0, 0, screenWidth, screenHeight ); //image, source, destination (crop and scale)			
+			GC.drawImage( image1, spriteCol*64, spriteRow*64, 64, 64, playerX, playerY, 64, 64 ); //image, source, destination (crop and scale)
+			GC.strokeRect(0,0, screenWidth,screenHeight);
+		
+		}
+
+	</script>
+  </body>
+</html>
+
+
+
